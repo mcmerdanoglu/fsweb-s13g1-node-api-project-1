@@ -2,14 +2,15 @@
 
 const express = require("express");
 
-const Users = require("./users/model");
+const userModel = require("./users/model");
 
 const server = express();
 
 server.use(express.json());
 
 server.get("/api/users", (req, res) => {
-  Users.find()
+  userModel
+    .find()
     .then((users) => {
       res.json(users);
     })
@@ -21,7 +22,8 @@ server.get("/api/users", (req, res) => {
 });
 
 server.get("/api/users/:id", (req, res) => {
-  Users.findById(req.params.id)
+  userModel
+    .findById(req.params.id)
     .then((user) => {
       if (user === undefined) {
         res.status(404).json({
@@ -41,10 +43,11 @@ server.post("/api/users", (req, res) => {
   const user = req.body;
   if (!user.name || !user.bio) {
     res.status(400).json({
-      message: "Lütfen kullanıcı için bir name ve bio sa girin.",
+      message: "Lütfen kullanıcı için bir name ve bio sağlayın.",
     });
   } else {
-    Users.insert(user)
+    userModel
+      .insert(user)
       .then((newUser) => {
         res.status(201).json(newUser);
       })
@@ -57,13 +60,14 @@ server.post("/api/users", (req, res) => {
 });
 
 server.delete("/api/users/:id", async (req, res) => {
-  const possibleUser = await Users.findById(req.params.id);
+  const possibleUser = await userModel.findById(req.params.id);
   if (!possibleUser) {
     res.status(404).json({
       message: "Girilen id ile eşleşen kullanıcı bulunamadı.",
     });
   } else {
-    Users.remove(possibleUser.id)
+    userModel
+      .remove(possibleUser.id)
       .then((deletedUser) => {
         res.json(deletedUser);
       })
@@ -76,7 +80,7 @@ server.delete("/api/users/:id", async (req, res) => {
 });
 
 server.put("/api/users/:id", async (req, res) => {
-  const possibleUser = await Users.findById(req.params.id);
+  const possibleUser = await userModel.findById(req.params.id);
   if (!possibleUser) {
     res.status(404).json({
       message: "Girilen id ile eşleşen kullanıcı bulunamadı.",
@@ -87,7 +91,8 @@ server.put("/api/users/:id", async (req, res) => {
         message: "Lütfen kullanıcı name ve biosu girin.",
       });
     } else {
-      Users.update(req.params.id, req.body)
+      userModel
+        .update(req.params.id, req.body)
         .then((updatedUser) => {
           res.status(200).json(updatedUser);
         })
